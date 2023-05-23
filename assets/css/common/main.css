@@ -27,15 +27,15 @@
     margin-inline-start: auto;
 }
 
-.social-icons {
+.contact-icons {
     padding: 12px 0;
 }
 
-.social-icons a:not(:last-of-type) {
+.contact-icons a:not(:last-of-type) {
     margin-inline-end: 12px;
 }
 
-.social-icons a svg {
+.contact-icons a svg {
     height: 26px;
     width: 26px;
 }
