@@ -1,0 +1,80 @@
+{{- define "main" -}} 
+{{ $pub_type := index .Params.publication_types 0 }} 
+{{ $pub_type = 0 }}
+{{ $bib_file := path.Join .File.Dir "cite.bib"}}
+<article class="post-single">
+  <header class="post-header">
+    {{ partial "breadcrumbs.html" . }}
+    <h1 class="post-title" style="font-size: 30px">
+      {{ .Title }} {{- if .Draft }}<sup
+        ><span class="entry-isdraft">&nbsp;&nbsp;[draft]</span></sup
+      >{{- end }}
+    </h1>
+    {{- if .Description }}
+    <div class="post-description">{{ .Description }}</div>
+    {{- end }} {{- if not (.Param "hideMeta") }}
+    <div class="post-meta">
+      {{- partial "post_meta.html" . -}} 
+      {{- partial "translation_list.html" . -}} 
+      {{- partial "edit_post.html" . -}} 
+      {{- partial "post_canonical.html" . -}}
+    </div>
+    {{- end }}
+  </header>
+  {{- $isHidden := .Params.cover.hidden | default site.Params.cover.hiddenInSingle | default site.Params.cover.hidden }}
+  {{- partial "cover.html" (dict "cxt" . "IsHome" false "isHidden" $isHidden) }}
+  <div class="post-content">
+    {{ if .Params.abstract }}
+    <span>
+      <h3>Abstract</h3>
+      <p class="pub-abstract">{{ .Params.abstract | markdownify }}</p>
+    </span>
+    {{ end }} 
+    {{/* If the type is Uncategorized, hide the type. */}} 
+    {{ if ne $pub_type 0 }}
+      <span>
+        <div class="">Publication type</div>
+        <div class="">{{ $pub_type }}</div>
+      </span>
+    {{ end }}
+    <div class="entry-content">
+      {{ range $k, $v := .Params.authors }}
+      {{- if $k }}, {{ end }}
+      {{- . -}}
+      {{ end }}
+      <div>{{ .Params.publication | markdownify}}, {{ .Date.Format "2006" }}</div>
+      </div>
+    {{- /* Authors, bibtex */ -}}
+    <p>
+      <!-- <details open=true> -->
+      <details>
+      <summary markdown="span">BibTeX</summary>
+      <pre><code>{{ os.ReadFile $bib_file}}</code></pre>
+    </details></p>
+
+    {{- if not (.Param "disableAnchoredHeadings") }}
+    {{- partial "anchored_headings.html" .Content -}}
+    {{- else }}{{ .Content }}{{ end }}
+
+    <footer class="post-footer">
+      {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
+      <ul class="post-tags">
+        {{- range ($.GetTerms $tags) }}
+        <li><a href="{{ .Permalink }}">{{ .LinkTitle }}</a></li>
+        {{- end }}
+      </ul>
+      {{- if (.Param "ShowPostNavLinks") }}
+      {{- partial "post_nav_links.html" . }}
+      {{- end }}
+      {{- if (and site.Params.ShowShareButtons (ne .Params.disableShare true)) }}
+      {{- partial "share_icons.html" . -}}
+      {{- end }}
+    </footer>
+  
+    {{- if (.Param "comments") }}
+    {{- partial "comments.html" . }}
+    {{- end }}
+  </article>
+  
+  {{- end }}{{/* end main */}}
+  
